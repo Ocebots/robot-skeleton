@@ -5,47 +5,26 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
+ * This wraps the {@link RobotContainer} and handles all the basic {@link Command} stuff, so the
+ * {@link RobotContainer} doesn't have too.
  */
 public class Robot extends TimedRobot {
-  Drivetrain drivetrain = new Drivetrain();
-  CommandXboxController controller = new CommandXboxController(0);
+  private Command autonomousCommand;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+  private RobotContainer robotContainer;
+
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+    robotContainer = new RobotContainer();
+  }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-  }
-
-  @Override
-  public void autonomousInit() {
-    new ExampleCommand(drivetrain, 0.3, 0.0).withTimeout(1).schedule();
-  }
-
-  @Override
-  public void autonomousPeriodic() {
-  }
-
-  @Override
-  public void teleopInit() {
-  }
-
-  @Override
-  public void teleopPeriodic() {
-    drivetrain.drive(controller.getLeftY(), controller.getRightX());
   }
 
   @Override
@@ -55,14 +34,44 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {}
 
   @Override
-  public void testInit() {}
+  public void disabledExit() {}
+
+  @Override
+  public void autonomousInit() {
+    autonomousCommand = robotContainer.getAutonomousCommand();
+
+    if (autonomousCommand != null) {
+      autonomousCommand.schedule();
+    }
+  }
+
+  @Override
+  public void autonomousPeriodic() {}
+
+  @Override
+  public void autonomousExit() {}
+
+  @Override
+  public void teleopInit() {
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
+    }
+  }
+
+  @Override
+  public void teleopPeriodic() {}
+
+  @Override
+  public void teleopExit() {}
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   @Override
   public void testPeriodic() {}
 
   @Override
-  public void simulationInit() {}
-
-  @Override
-  public void simulationPeriodic() {}
+  public void testExit() {}
 }
