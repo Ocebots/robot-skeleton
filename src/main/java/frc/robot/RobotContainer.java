@@ -21,7 +21,8 @@ public class RobotContainer {
             () ->
                 drivetrain.setSpeeds(
                     new ChassisSpeeds(-controller.getLeftY(), 0, -controller.getRightX())),
-            () -> drivetrain.stop()));
+            () -> drivetrain.stop(),
+            drivetrain));
   }
 
   public Command getAutonomousCommand() {
